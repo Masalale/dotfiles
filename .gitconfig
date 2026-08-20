@@ -1,0 +1,10 @@
+[user]
+	name = Masalale
+	email = clarenchomba59@gmail.com
+[core]
+	autocrlf = input
+[init]
+	defaultBranch = main
+[safe]
+	directory = /home/ngash/flutter
+	directory = %(prefix)///wsl.localhost/FedoraLinux-43/home/ngash/flutter
