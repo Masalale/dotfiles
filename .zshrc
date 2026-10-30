@@ -152,7 +152,6 @@ export PATH="$HOME/.local/bin:$BUN_INSTALL/bin:$DOTNET_ROOT:$DOTNET_ROOT/tools:$
 export GH_NO_TELEMETRY=1
 export OPENCODE_DISABLE_PRUNE=true
 export EDITOR="nvim"
-export CLAUDETREE_LUA="/home/ngash/.local/share/claudetree"
 export BAT_THEME="Monokai Extended"
 
 # --- history ---
