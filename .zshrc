@@ -107,30 +107,11 @@ alias sdr="sudo dnf remove"
 alias sdri="sudo dnf reinstall"
 alias sds="sudo dnf search"
 
-# --- upgrade: system + AI CLI tools ---
-unalias upgrade 2>/dev/null   # clear stale alias from previously-sourced shell
-upgrade() {
-  sudo dnf upgrade -y
-  local tools=(bun pi opencode claude hermes agy)
-  local failed=()
-  for t in $tools; do
-    print -P "%F{cyan}── %B$t%b ──%f"
-    case $t in
-      bun)      bun upgrade ;;
-      pi)       pi update ;;
-      opencode) "$HOME/.local/bin/opencode" upgrade ;;  # self-upgrade the standalone (~/.opencode/bin)
-      claude)   claude update ;;
-      hermes)   hermes update ;;
-      agy)      command agy update ;;
-    esac
-    if [[ $? -ne 0 ]]; then failed+=($t); fi
-  done
-  if (( ${#failed} )); then
-    print -P "%F{red}✗ upgrade failed for: %B${(j:, :)failed}%b%f"
-    return 1
-  fi
-  print -P "%F{green}✓ system & all tools up to date%f"
-}
+# --- upgrade: everything via Topgrade ---
+# Topgrade handles dnf, bun, zinit, rustup, flutter, pip, uv, nvim plugins,
+# gh extensions, claude, opencode, hermes, agy, and more in one pass.
+unalias upgrade 2>/dev/null   # clear stale alias/function from previously-sourced shell
+alias upgrade="topgrade"
 alias ctt="curl -fsSL https://christitus.com/linux | sh"
 alias explorer="explorer.exe"
 
@@ -187,9 +168,24 @@ alias claude="/home/ngash/.local/bin/claude --dangerously-skip-permissions"
 # Antigravity CLI with permissions bypass
 alias agy="agy --dangerously-skip-permissions"
 
+# --- nvm: sole WSL Node.js runtime ---
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # Loads nvm and puts managed node first in PATH
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Loads nvm bash_completion
+
 # --- zoxide (must be the last thing initialized) ---
 export _ZO_DOCTOR=0
 # Defensive: some AI tools (Claude Code, OpenCode) emit `cs <dir>` as a typo
 # for `cd <dir>`. Funnel it through zoxide's wrapper so the smart-jump still works.
 alias cs='cd'
 eval "$(zoxide init zsh --cmd cd)"
+
+# >>> magpie agy >>>
+function agy {
+  if [ -x '/home/ngash/.local/bin/magpie' ]; then '/home/ngash/.local/bin/magpie' agy run "$@"; else command agy "$@"; fi
+}
+# <<< magpie agy <<<
+
+# DeepSeek Harness TUI language
+export DSH_TUI_LANG=en
+
